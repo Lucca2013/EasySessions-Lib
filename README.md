@@ -46,12 +46,12 @@ cd EasySession-lib
 import EasySession from "../main.js";
 
 //the creation of a JSON storage. Params: path
-EasySession.createJSON("/sessions");
+EasySession.JSON.create("/sessions");
 
 //append a info to the JSON, you can put only username and the script will create the fields:
 //username, id and createdAt
 //params: path of the JSON, username
-EasySession.appendToJSON("/sessions", 'randomName');
+EasySession.JSON.append("/sessions", 'randomName');
 ```
 
 ---
