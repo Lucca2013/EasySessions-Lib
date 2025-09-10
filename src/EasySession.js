@@ -1,7 +1,7 @@
 import createJSON from "./sessionsConfig/createSessionsFile/createJSON.js";
 import createDatabase from "./sessionsConfig/createSessionsFile/createDatabase.js";
 import appendJSON from "./sessionsConfig/apendInfoSessions/appendJSON.js";
-//import getInfoJSON from "./sessionsConfig/getInfoSessions/getInfoJSON.js";
+import getInfoJSON from "./sessionsConfig/getInfoSessions/getInfoJSON.js";
 
 class EasySession {
     //JSON part
@@ -14,9 +14,9 @@ class EasySession {
             return new appendJSON(filePath, data);
         },
 
-        //getInfo({ filePath = process.cwd(), username = null, whatInfo = null } = {}) {
-            //return new getInfoJSON(filePath, username, whatInfo);
-        //}
+        getInfo(filePath = process.cwd(), username = null) {
+            return new getInfoJSON(filePath, username);
+        }
     };
 
     //Database part

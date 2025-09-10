@@ -12,11 +12,7 @@ export default class appendJSON {
     appendToFile() {
         try {
             if (!this.path.endsWith('.json')) {
-                if (this.path.endsWith(path.sep)) {
-                    this.path = path.join(this.path, 'sessions.json');
-                } else {
-                    this.path = path.join(this.path, '/sessions.json');
-                }
+                this.path = path.join(this.path, 'sessions.json');
             }
 
             const dir = path.dirname(this.path);
@@ -25,20 +21,37 @@ export default class appendJSON {
                 return;
             }
 
-            const raw = fs.readFileSync(this.path, "utf8");
-            if (raw.trim()) {
-                this.oldData = JSON.parse(raw);
+            let oldData = {};
+
+            if (fs.existsSync(this.path)) {
+                const raw = fs.readFileSync(this.path, "utf8");
+                if (raw.trim()) {
+                    try {
+                        oldData = JSON.parse(raw);
+                    } catch (e) {
+                        console.error("Error parsing existing JSON file:", e);
+                        oldData = {};s
+                    }
+                }
             }
 
-            if (!Array.isArray(this.oldData)) {
-                this.oldData = [this.oldData];
+            if (Array.isArray(oldData) || typeof oldData !== "object") {
+                oldData = {};
             }
 
-            this.oldData.push(this.data);
-            this.data = this.oldData;
+            oldData[this.data.username] = {
+                id: this.data.id,
+                createdAt: this.data.createdAt
+            };
 
-            fs.writeFileSync(this.path, JSON.stringify(this.data, null, 2));
-            console.log("File successfully written to:", this.path);
+            if (oldData.hasOwnProperty(this.data.username)) {
+                console.error("\nEasySession warning! User already exists. \n");
+            } else {
+                this.newData = oldData;
+
+                fs.writeFileSync(this.path, JSON.stringify(this.newData, null, 2));
+                console.log("File successfully written to:", this.path);
+            }
         } catch (error) {
             console.error("\nEasySession error! Error appending data to JSON file:\n", error);
         }
@@ -63,7 +76,7 @@ export default class appendJSON {
                 const jsonData = JSON.parse(data);
                 if (!jsonData.username) {
                     console.error("\nEasySession error! Normally in EasySession, you can enter just the username as a string, and the JSON is generated automatically. But if you want to provide a full JSON object, it must contain 'username'\n ");
-                    return [];
+                    return {};
                 } else {
                     const id = crypto.randomBytes(16).toString("hex");
                     return {
@@ -75,7 +88,7 @@ export default class appendJSON {
 
             } catch (error) {
                 console.error("\nEasySession error! Invalid JSON string provided:\n", error);
-                return [];
+                return {};
             }
         } else {
             if (typeof data === 'string') {
@@ -89,7 +102,7 @@ export default class appendJSON {
                     }
                 } catch (error) {
                     console.error("\nEasySession error! Invalid JSON string provided:\n", error);
-                    return [];
+                    return {};
                 }
             }
         }

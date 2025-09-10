@@ -51,7 +51,16 @@ EasySession.JSON.create("/sessions");
 //append a info to the JSON, you can put only username and the script will create the fields:
 //username, id and createdAt
 //params: path of the JSON, username
-EasySession.JSON.append("/sessions", 'randomName');
+EasySession.JSON.append("/sessions", "randomName");
+
+//put all the sessions info of a user in a var. Params: path, username
+const Info = EasySession.JSON.getInfo("/sessions", "randomName");
+//you can test:
+if (Info.id === "5fb55bfe61418d1b0c1d19e0126e5845") { //in the future, you will put the id who is in the LocalStorage of the user to compare
+  console.log("id ok"); 
+} else {
+  console.log("id not ok");
+}
 ```
 
 ---
