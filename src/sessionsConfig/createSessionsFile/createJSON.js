@@ -11,6 +11,7 @@ export default class createJSON {
 
     if (!fs.existsSync(this.sessionsFile)) {
       fs.writeFileSync(this.sessionsFile, JSON.stringify([], null, 2));
+      console.log("JSON storage was created")
     }
   }
 

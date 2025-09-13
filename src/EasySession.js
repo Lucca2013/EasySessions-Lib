@@ -1,7 +1,11 @@
 import createJSON from "./sessionsConfig/createSessionsFile/createJSON.js";
-import createDatabase from "./sessionsConfig/createSessionsFile/createDatabase.js";
-import appendJSON from "./sessionsConfig/apendInfoSessions/appendJSON.js";
+import appendJSON from "./sessionsConfig/appendInfoSessions/appendJSON.js";
 import getInfoJSON from "./sessionsConfig/getInfoSessions/getInfoJSON.js";
+import deleteInfoJSON from "./sessionsConfig/deleteInfoSessions/deleteInfoJSON.js";
+//import createDB from "./sessionsConfig/createSessionsFile/createDB.js";
+//import appendDB from "./sessionsConfig/appendInfoSessions/appendDB.js";
+//import getInfoDB from "./sessionsConfig/getInfoSessions/getInfoDB.js";
+//import deleteInfoDB from "./sessionsConfig/deleteInfoSessions/deleteInfoDB.js";
 
 class EasySession {
     //JSON part
@@ -16,13 +20,32 @@ class EasySession {
 
         getInfo(filePath = process.cwd(), username = null) {
             return new getInfoJSON(filePath, username);
+        },
+
+        deleteInfo(filePath = process.cwd(), username = null){
+            return new deleteInfoJSON(filePath, username)
         }
     };
 
     //Database part
-    static createDatabase(conn) {
-    return new createDatabase(conn);
-}
+    //static DB = {
+        //create() {
+            //return createDB();
+        //},
+
+        //append() {
+            //return appendDB();
+        //},
+
+        //getInfo() {
+            //return getInfoDB();
+        //},
+
+        //deleteInfo(){
+            //return deleteInfoDB();
+        //}
+
+    //}
 
 
 

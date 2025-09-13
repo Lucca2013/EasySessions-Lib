@@ -61,6 +61,9 @@ if (Info.id === "5fb55bfe61418d1b0c1d19e0126e5845") { //in the future, you will 
 } else {
   console.log("id not ok");
 }
+
+//delete all the fields of a username. Params: path, username
+EasySession.JSON.deleteInfo("/sessions", "randomName")
 ```
 
 ---
