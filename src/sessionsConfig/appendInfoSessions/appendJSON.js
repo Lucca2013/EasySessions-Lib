@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import Logger from "../../utils/logger.js";
 
 export default class appendJSON {
     constructor(filePath, data) {
@@ -17,7 +18,7 @@ export default class appendJSON {
 
             const dir = path.dirname(this.path);
             if (!fs.existsSync(dir)) {
-                console.error("\nEasySession error! Directory does not exist. \n\n To create it, use:\n EasySession.createJSON(\"" + dir + "\"); \n");
+                Logger.error("EasySession error! Directory does not exist. \n\n To create it, use:\n EasySession.createJSON(\"" + dir + "\"); \n");
                 return;
             }
 
@@ -29,7 +30,7 @@ export default class appendJSON {
                     try {
                         oldData = JSON.parse(raw);
                     } catch (e) {
-                        console.error("Error parsing existing JSON file:", e);
+                        Logger.error("Error parsing existing JSON file:", e);
                         oldData = {};
                     }
                 }
@@ -40,7 +41,7 @@ export default class appendJSON {
             }
 
             if (oldData.hasOwnProperty(this.data.username)) {
-                console.error("\nEasySession warning! User already exists. \n");
+                Logger.warn("EasySession warning! User already exists. \n");
             } else {
                 oldData[this.data.username] = {
                     id: this.data.id,
@@ -50,10 +51,10 @@ export default class appendJSON {
                 this.newData = oldData;
 
                 fs.writeFileSync(this.path, JSON.stringify(this.newData, null, 2));
-                console.log("File successfully written to:", this.path);
+                Logger.success(`File successfully written to: ${this.path} \n`);
             }
         } catch (error) {
-            console.error("\nEasySession error! Error appending data to JSON file:\n", error);
+            Logger.error("EasySession error! Error appending data to JSON file:\n", error);
         }
     }
 
@@ -64,8 +65,8 @@ export default class appendJSON {
         } else if (path.isAbsolute(filePath)) {
             return filePath;
         } else {
-            console.error("\nEasySession warning! Relative paths may not work as expected.");
-            console.error("Consider using an absolute path starting with '/' or a full path");
+            Logger.warn("EasySession warning! Relative paths may not work as expected.");
+            Logger.info("Consider using an absolute path starting with '/' or a full path");
             return path.resolve(process.cwd(), filePath);
         }
     }
@@ -75,7 +76,7 @@ export default class appendJSON {
             try {
                 const jsonData = JSON.parse(data);
                 if (!jsonData.username) {
-                    console.error("\nEasySession error! Normally in EasySession, you can enter just the username as a string, and the JSON is generated automatically. But if you want to provide a full JSON object, it must contain 'username'\n ");
+                    Logger.error("EasySession error! Normally in EasySession, you can enter just the username as a string, \n and the JSON is generated automatically. But if you want to provide a full JSON object, it must contain 'username'\n ");
                     return {};
                 } else {
                     const id = crypto.randomBytes(16).toString("hex");
@@ -87,7 +88,7 @@ export default class appendJSON {
                 }
 
             } catch (error) {
-                console.error("\nEasySession error! Invalid JSON string provided:\n", error);
+                Logger.error("EasySession error! Invalid JSON string provided:\n", error);
                 return {};
             }
         } else {
@@ -101,7 +102,7 @@ export default class appendJSON {
                         "createdAt": new Date().toISOString()
                     }
                 } catch (error) {
-                    console.error("\nEasySession error! Invalid JSON string provided:\n", error);
+                    Logger.error("EasySession error! Invalid JSON string provided:\n", error);
                     return {};
                 }
             }

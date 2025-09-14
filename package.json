@@ -4,7 +4,7 @@
   "description": "A library for managing user sessions in JavaScript applications.",
   "main": "main.js",
   "scripts": {
-    "test": "node test/testJSON.js",
+    "test": "node test/testDB.js",
     "build": "babel src -d dist"
   },
   "keywords": [
@@ -15,11 +15,17 @@
   ],
   "author": "Github: Lucca2013",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "dotenv": "^17.2.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.5",
+    "pg": "^8.16.3"
+  },
   "devDependencies": {
-    "jest": "^27.0.0",
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0"
+    "babel-preset-env": "^1.7.0",
+    "jest": "^27.0.0"
   },
   "type": "module"
 }

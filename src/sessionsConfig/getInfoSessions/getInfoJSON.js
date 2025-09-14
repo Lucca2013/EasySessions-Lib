@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import Logger from "../../utils/logger.js";
 
 export default class getInfoJSON {
     constructor(filePath, username) {
@@ -11,7 +12,7 @@ export default class getInfoJSON {
 
     verifyUsername(username) {
         if (!username || typeof username !== 'string' || username.trim() === '' || username == null) {
-            console.error("\nEasySession error! Invalid username provided.");
+            Logger.error("EasySession error! Invalid username provided.");
         } else {
             return username;
         }
@@ -24,8 +25,8 @@ export default class getInfoJSON {
         } else if (path.isAbsolute(filePath)) {
             return filePath;
         } else {
-            console.error("\nEasySession warning! Relative paths may not work as expected.");
-            console.error("Consider using an absolute path starting with '/' or a full path");
+            Logger.warn("EasySession warning! Relative paths may not work as expected.");
+            Logger.info("Consider using an absolute path starting with '/' or a full path");
             return path.resolve(process.cwd(), filePath);
         }
     }
@@ -33,7 +34,7 @@ export default class getInfoJSON {
     getInfo() {
         try{
             if (!fs.existsSync(this.filePath)) {
-                console.error("\nEasySession error! JSON file does not exist at the specified path:", this.filePath);
+                Logger.error("EasySession error! JSON file does not exist at the specified path:", this.filePath);
             }else{
                 if(this.filePath.endsWith("/")){
                     this.filePath = this.filePath + "sessions.json";
@@ -49,12 +50,12 @@ export default class getInfoJSON {
                 if(this.username in jsonData){
                     return jsonData[this.username];
                 }else{
-                    console.error(`\nEasySession error! Username: ${this.username} not found in the JSON file.\n`);
+                    Logger.error(`EasySession error! Username: ${this.username} not found in the JSON file.\n`);
                 }
                 
             }
         } catch (error) {
-            console.error("\nEasySession error! An error occurred while checking the JSON file:", error);
+            Logger.error("EasySession error! An error occurred while checking the JSON file:", error);
         }
     }
 

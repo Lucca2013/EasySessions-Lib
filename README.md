@@ -21,8 +21,8 @@ Instead of manually handling files, IDs, and persistence, EasySession-lib abstra
 EasySession-lib is currently in **active development**.
 
 - ✅ JSON storage available
-- 🔜 Database storage planned
-- 🔜 Client-server integration planned
+- ⚠️ Database storage in developement
+- 🔜 Local-Storage system planned
 
 ---
 
@@ -41,6 +41,8 @@ cd EasySession-lib
 ---
 
 ## ⚡ Usage Example
+
+JSON server storage:
 
 ```js
 import EasySession from "../main.js";
@@ -64,6 +66,18 @@ if (Info.id === "5fb55bfe61418d1b0c1d19e0126e5845") { //in the future, you will 
 
 //delete all the fields of a username. Params: path, username
 EasySession.JSON.deleteInfo("/sessions", "randomName")
+```
+
+SQL server storage (only create at the moment)
+
+```js
+import EasySession from "../main.js";
+import { configDotenv } from "dotenv";
+
+configDotenv(); 
+
+//the creation of a SQL storage. Params: DATABASE_URL
+EasySession.DB.create(process.env.DATABASE_URL);
 ```
 
 ---

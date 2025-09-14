@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import Logger from "../../utils/logger.js";
 
 export default class createJSON {
   constructor(dir = process.cwd()) {
@@ -11,7 +12,9 @@ export default class createJSON {
 
     if (!fs.existsSync(this.sessionsFile)) {
       fs.writeFileSync(this.sessionsFile, JSON.stringify([], null, 2));
-      console.log("JSON storage was created")
+      Logger.success("JSON storage was created at " + this.sessionsFile);
+    }else {
+      Logger.info("Already exists a JSON storage at " + this.sessionsFile);
     }
   }
 
@@ -22,8 +25,8 @@ export default class createJSON {
     } else if (path.isAbsolute(filePath)) {
       return filePath;
     } else {
-      console.error("\nEasySession warning! Relative paths may not work as expected.");
-      console.error("Consider using an absolute path starting with '/' or a full path");
+      Logger.warn("Relative paths may not work as expected.");
+      Logger.info("Consider using an absolute path starting with '/' or a full path");
       return path.resolve(process.cwd(), filePath);
     }
   }

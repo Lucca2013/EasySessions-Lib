@@ -2,10 +2,10 @@ import createJSON from "./sessionsConfig/createSessionsFile/createJSON.js";
 import appendJSON from "./sessionsConfig/appendInfoSessions/appendJSON.js";
 import getInfoJSON from "./sessionsConfig/getInfoSessions/getInfoJSON.js";
 import deleteInfoJSON from "./sessionsConfig/deleteInfoSessions/deleteInfoJSON.js";
-//import createDB from "./sessionsConfig/createSessionsFile/createDB.js";
-//import appendDB from "./sessionsConfig/appendInfoSessions/appendDB.js";
-//import getInfoDB from "./sessionsConfig/getInfoSessions/getInfoDB.js";
-//import deleteInfoDB from "./sessionsConfig/deleteInfoSessions/deleteInfoDB.js";
+import createDB from "./sessionsConfig/createSessionsFile/createDB.js";
+import appendDB from "./sessionsConfig/appendInfoSessions/appendDB.js";
+import getInfoDB from "./sessionsConfig/getInfoSessions/getInfoDB.js";
+import deleteInfoDB from "./sessionsConfig/deleteInfoSessions/deleteInfoDB.js";
 
 class EasySession {
     //JSON part
@@ -28,24 +28,24 @@ class EasySession {
     };
 
     //Database part
-    //static DB = {
-        //create() {
-            //return createDB();
-        //},
+    static DB = {
+        create(databaseUrl) {
+            return new createDB(databaseUrl);
+        },
 
-        //append() {
-            //return appendDB();
-        //},
+        append() {
+            return new appendDB();
+        },
 
-        //getInfo() {
-            //return getInfoDB();
-        //},
+        getInfo() {
+            return new getInfoDB();
+        },
 
-        //deleteInfo(){
-            //return deleteInfoDB();
-        //}
+        deleteInfo(){
+            return new deleteInfoDB();
+        }
 
-    //}
+    }
 
 
 
