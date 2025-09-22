@@ -3,4 +3,9 @@ import { configDotenv } from "dotenv";
 
 configDotenv(); 
 
-EasySession.DB.create(process.env.DATABASE_URL);
+await EasySession.DB.create(process.env.DATABASE_URL);
+
+for (let i = 0; i < 5; i++) {
+    const randomName = ["alice", "bob", "charlie", "dave", "eve"];
+    EasySession.DB.append(process.env.DATABASE_URL, randomName[i])
+}

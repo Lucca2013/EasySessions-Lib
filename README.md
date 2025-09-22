@@ -77,7 +77,12 @@ import { configDotenv } from "dotenv";
 configDotenv(); 
 
 //the creation of a SQL storage. Params: DATABASE_URL
-EasySession.DB.create(process.env.DATABASE_URL);
+await EasySession.DB.create(process.env.DATABASE_URL);
+
+//append a info to the DB, you can put only username and the script will create the fields:
+//username, id and createdAt
+//params: DATABASE_URL, username
+EasySession.DB.append(process.env.DATABASE_URL, 'randomName')
 ```
 
 ---

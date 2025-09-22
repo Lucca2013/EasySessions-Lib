@@ -1,12 +1,17 @@
 import { Pool as PgPool } from "pg";
 import mysql from "mysql2/promise";
 import Logger from "../../utils/logger.js";
+import { NONAME } from "dns";
 
 export default class createDatabase {
     constructor(databaseUrl) {
+        if (!databaseUrl) {
+            Logger.error("Database URL is undefined.");
+            throw new Error("Database URL is required");
+        }
+
         this.databaseUrl = this.verifyDatabaseUrl(databaseUrl);
         this.DBType = databaseUrl.startsWith("postgresql") ? "postgresql" : "mysql";
-        this.createDB();
     }
 
     verifyDatabaseUrl(databaseUrl) {
@@ -18,39 +23,68 @@ export default class createDatabase {
     }
 
     async createDB() {
+        let pool;
         try {
             if (this.DBType === "postgresql") {
-                this.DBLocation = new PgPool({ connectionString: this.databaseUrl });
+                pool = new PgPool({ connectionString: this.databaseUrl });
 
-                const query = `
-                CREATE TABLE IF NOT EXISTS sessions (
-                    username TEXT NOT NULL,
-                    id SERIAL PRIMARY KEY,
-                    createdAt TEXT NOT NULL
-                )`;
+                const res = await pool.query(`
+                    SELECT EXISTS (
+                        SELECT FROM pg_tables
+                        WHERE  schemaname = 'public'
+                        AND    tablename  = 'sessions'
+                    );
+                `);
 
-                await this.DBLocation.query(query);
+                const tableExists = res.rows[0].exists;
 
-                Logger.success("postgresql sessions storage created")
+                if (tableExists) {
+                    Logger.warn("Table 'sessions' already exists. The application will not attempt to create it again.");
+                    return;
+                } else {
+                    await pool.query(`
+                        CREATE TABLE sessions (
+                            username TEXT NOT NULL,
+                            id TEXT PRIMARY KEY,
+                            createdAt TEXT NOT NULL
+                        );
+                    `);
+                    Logger.success("PostgreSQL 'sessions' storage created.");
+                }
+
+
             } else {
-                this.client = mysql.createPool(this.databaseUrl);
+                const [rows] = await pool.query(`
+                    SELECT EXISTS (
+                        SELECT TABLE_NAME FROM information_schema.tables
+                        WHERE table_schema = DATABASE()
+                        AND table_name = 'sessions'
+                    ) AS tableExists;
+                `);
 
-                const query = `
-                CREATE TABLE IF NOT EXISTS sessions (
-                    name VARCHAR(255) NOT NULL,
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    createdAt TEXT NOT NULL
-                )`;
+                const tableExists = rows[0].tableExists;
 
-                await this.DBLocation.query(query);
-
-                Logger.success("mysql sessions storage created")
+                if (tableExists) {
+                    Logger.warn("Table 'sessions' already exists. The application will not attempt to create it again.");
+                    return;
+                } else {
+                    await pool.query(`
+                        CREATE TABLE sessions (
+                            username VARCHAR(255) NOT NULL,
+                            id VARCHAR(255) PRIMARY KEY,
+                            createdAt VARCHAR(255) NOT NULL
+                        );
+                    `);
+                    Logger.success("MySQL 'sessions' storage created.");
+                }
             }
-        } catch (error){
+        } catch (error) {
             Logger.error(`EasySession error! error while trying to create a sessions table:\n ${error}`)
+        } finally {
+            if (pool) await pool.end();
         }
-        
 
-        
+
+
     }
 }

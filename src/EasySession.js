@@ -7,7 +7,7 @@ import appendDB from "./sessionsConfig/appendInfoSessions/appendDB.js";
 import getInfoDB from "./sessionsConfig/getInfoSessions/getInfoDB.js";
 import deleteInfoDB from "./sessionsConfig/deleteInfoSessions/deleteInfoDB.js";
 
-class EasySession {
+export default class EasySession {
     //JSON part
     static JSON = {
         create(dir = process.cwd()) {
@@ -29,19 +29,21 @@ class EasySession {
 
     //Database part
     static DB = {
-        create(databaseUrl) {
-            return new createDB(databaseUrl);
+        async create(databaseUrl) {
+            const createdb = new createDB(databaseUrl);
+            await createdb.createDB();
         },
 
-        append() {
-            return new appendDB();
+        async append(databaseUrl, data) {
+            const appenddb = new appendDB(databaseUrl, data);
+            await appenddb.appendToDB();
         },
 
-        getInfo() {
+        async getInfo() {
             return new getInfoDB();
         },
 
-        deleteInfo(){
+        async deleteInfo(){
             return new deleteInfoDB();
         }
 
@@ -50,5 +52,3 @@ class EasySession {
 
 
 }
-
-export default EasySession;
