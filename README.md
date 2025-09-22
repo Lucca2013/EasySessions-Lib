@@ -68,7 +68,7 @@ if (Info.id === "5fb55bfe61418d1b0c1d19e0126e5845") { //in the future, you will 
 EasySession.JSON.deleteInfo("/sessions", "randomName")
 ```
 
-SQL server storage (only create at the moment)
+SQL server storage (only create and append at the moment)
 
 ```js
 import EasySession from "../main.js";
