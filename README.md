@@ -83,6 +83,16 @@ await EasySession.DB.create(process.env.DATABASE_URL);
 //username, id and createdAt
 //params: DATABASE_URL, username
 EasySession.DB.append(process.env.DATABASE_URL, 'randomName')
+
+//put all the sessions info of a user in a var. Params: DATABASE_URL, username
+Info = await EasySession.DB.getInfo(process.env.DATABASE_URL, 'randomName')
+
+if (Info.id === "5fb55bfe61418d1b0c1d19e0126e5845") { //in the future, you will put the id who is in the LocalStorage of the user to compare
+  console.log("id ok"); 
+} else {
+  console.log("id not ok");
+}
+
 ```
 
 ---

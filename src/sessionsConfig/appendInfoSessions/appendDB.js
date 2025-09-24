@@ -14,7 +14,7 @@ export default class appendDB {
         if (databaseUrl.startsWith("postgresql://") || databaseUrl.startsWith("mysql://")) {
             return databaseUrl
         } else {
-            Logger.error("EasySessions error! the database url needs to start with: >> postgresql:// OR mysql:// <<")
+            Logger.error("EasySessions error! the database url needs to start with: >> postgresql:// OR mysql:// << \n error at: DB.append function")
         }
     }
 
@@ -23,7 +23,7 @@ export default class appendDB {
             try {
                 const jsonData = JSON.parse(data);
                 if (!jsonData.username) {
-                    Logger.error("EasySession error! Normally in EasySession, you can enter just the username as a string, \n and the JSON is generated automatically. But if you want to provide a full JSON object, it must contain 'username'\n ");
+                    Logger.error("EasySession error! Normally in EasySession, you can enter just the username as a string, \n and the JSON is generated automatically. But if you want to provide a full JSON object, it must contain 'username'\n error at: DB.append function");
                     return {};
                 } else {
                     const id = crypto.randomBytes(16).toString("hex");
@@ -35,7 +35,7 @@ export default class appendDB {
                 }
 
             } catch (error) {
-                Logger.error("EasySession error! Invalid JSON string provided:\n", error);
+                Logger.error("EasySession error! Invalid JSON string provided:\n", error, "\n\n error at: DB.append function");
                 return {};
             }
         } else {
@@ -49,7 +49,7 @@ export default class appendDB {
                         "createdAt": new Date().toISOString()
                     }
                 } catch (error) {
-                    Logger.error("EasySession error! Invalid string or JSON provided:\n", error);
+                    Logger.error("EasySession error! Invalid string or JSON provided:\n", error, "\n\n error at: DB.append function");
                     return {};
                 }
             }
@@ -64,7 +64,7 @@ export default class appendDB {
 
                 const result = await pool.query(`SELECT id FROM sessions WHERE username = $1`, [this.data.username]);
                 if (result.rows.length > 0) {
-                    Logger.warn(`User: ${this.data.username} already exists in the table, the application will not append info to the table`);
+                    Logger.warn(`User: ${this.data.username} already exists in the table, the application will not append info to the table \n warn at: DB.append function`);
                     return;
                 }
 
@@ -79,7 +79,7 @@ export default class appendDB {
 
                 const [rows] = await pool.query(`SELECT id FROM sessions WHERE username = ?`, [this.data.username]);
                 if (rows.length > 0) {
-                    Logger.warn(`User: ${this.data.username} already exists in the table, the application will not append info to the table`);
+                    Logger.warn(`User: ${this.data.username} already exists in the table, the application will not append info to the table \n warn at: DB.append function`);
                     return;
                 }
 

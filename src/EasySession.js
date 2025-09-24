@@ -39,8 +39,10 @@ export default class EasySession {
             await appenddb.appendToDB();
         },
 
-        async getInfo() {
-            return new getInfoDB();
+        async getInfo(databaseUrl, username) {
+            const getinfodb = new getInfoDB(databaseUrl, username);
+            const Info = await getinfodb.getInfo();
+            return Info;
         },
 
         async deleteInfo(){
