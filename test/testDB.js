@@ -1,13 +1,29 @@
 import EasySession from "../main.js";
 import { configDotenv } from "dotenv";
+import express from "express";
+configDotenv();
 
-configDotenv(); 
+const app = express();
+app.use(express.json());
 
-await EasySession.DB.create(process.env.DATABASE_URL)
+await EasySession.DB.create(process.env.DATABASE_URL);
 
-const randomNames = ["alice", "bob", "charlie", "dave", "eve"];
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
 
-for (const name of randomNames) {
-    EasySession.DB.append(process.env.DATABASE_URL, name)
-    const info = await EasySession.DB.getInfo(process.env.DATABASE_URL, name);
-}
+app.get('/', (req, res) => {
+  res.sendFile('index.html', { root: 'public' });
+});
+
+EasySession.expressUtils.onNewUsers(app, (user) => {
+    console.log("New user:", user);
+    const {username, password} = user;
+    EasySession.DB.append(process.env.DATABASE_URL, username, password);
+});
+
+app.post('/sessions/listenNewUsers', EasySession.handler(async (user) => {
+    console.log("New user:", user);
+    const {username, password} = user;
+    await EasySession.DB.append(process.env.DATABASE_URL, username, password);
+}));

@@ -2,10 +2,11 @@ import EasySession from "../main.js";
 
 for (let i = 0; i < 5; i++) {
     const randomName = ["alice", "bob", "charlie", "dave", "eve"];
+    const randomPassword = ["password1", "password2", "password3", "password4", "password5"];
     let name = i;
 
     EasySession.JSON.create("/sessions");
-    EasySession.JSON.append("/sessions", randomName[name]);
+    EasySession.JSON.append("/sessions", randomName[name], randomPassword[name]);
     const Info = EasySession.JSON.getInfo("/sessions", randomName[name]);
 }
 

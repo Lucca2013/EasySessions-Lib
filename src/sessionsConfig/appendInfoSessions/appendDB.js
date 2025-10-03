@@ -2,12 +2,28 @@ import { Pool as PgPool } from "pg";
 import mysql from "mysql2/promise";
 import crypto from "crypto";
 import Logger from "../../utils/logger.js";
+import { Session } from "inspector/promises";
 
 export default class appendDB {
-    constructor(databaseUrl, data) {
+    constructor(databaseUrl, username, SessionPassword) {
+        if (!databaseUrl) {
+            Logger.error("EasySession error! No database URL provided \n error at: DB.append function");
+            throw new Error("Database URL is required");
+        }
+
+        if (!username) {
+            Logger.error("EasySession error! No username provided to append \n error at: DB.append function");
+            throw new Error("Username is required to append");
+        }
+
+        if (!SessionPassword) {
+            Logger.error("EasySession error! No SessionPassword provided to append \n error at: DB.append function");
+            throw new Error("SessionPassword is required to append");
+        }
+
         this.databaseUrl = this.verifyDatabaseUrl(databaseUrl);
         this.DBType = databaseUrl.startsWith("postgresql") ? "postgresql" : "mysql";
-        this.data = this.validateData(data);
+        this.data = this.validateData(username, SessionPassword);
     }
 
     verifyDatabaseUrl(databaseUrl) {
@@ -18,40 +34,20 @@ export default class appendDB {
         }
     }
 
-    validateData(data) {
-        if (data.startsWith('{') && data.endsWith('}') || data.startsWith('[') && data.endsWith(']')) {
+    validateData(username, SessionPassword) {
+        if (typeof username === 'string' && typeof SessionPassword === 'string') {
             try {
-                const jsonData = JSON.parse(data);
-                if (!jsonData.username) {
-                    Logger.error("EasySession error! Normally in EasySession, you can enter just the username as a string, \n and the JSON is generated automatically. But if you want to provide a full JSON object, it must contain 'username'\n error at: DB.append function");
-                    return {};
-                } else {
-                    const id = crypto.randomBytes(16).toString("hex");
-                    return {
-                        "username": jsonData.username,
-                        "id": id,
-                        "createdAt": new Date().toISOString()
-                    };
+                const id = crypto.randomBytes(16).toString("hex");
+                console.log(SessionPassword)
+                return {
+                    "username": username,
+                    "SessionPassword": SessionPassword,
+                    "id": id,
+                    "createdAt": new Date().toISOString()
                 }
-
             } catch (error) {
-                Logger.error("EasySession error! Invalid JSON string provided:\n", error, "\n\n error at: DB.append function");
+                Logger.error("EasySession error! Invalid string or JSON provided:\n", error, "\n\n error at: DB.append function");
                 return {};
-            }
-        } else {
-            if (typeof data === 'string') {
-                try {
-                    const username = data;
-                    const id = crypto.randomBytes(16).toString("hex");
-                    return {
-                        "username": username,
-                        "id": id,
-                        "createdAt": new Date().toISOString()
-                    }
-                } catch (error) {
-                    Logger.error("EasySession error! Invalid string or JSON provided:\n", error, "\n\n error at: DB.append function");
-                    return {};
-                }
             }
         }
     }
@@ -69,8 +65,8 @@ export default class appendDB {
                 }
 
                 await pool.query(
-                    'INSERT INTO sessions (username, id, createdAt) VALUES ($1, $2, $3)',
-                    [this.data.username, this.data.id, this.data.createdAt]
+                    'INSERT INTO sessions (username, sessionpassword, id, createdAt) VALUES ($1, $2, $3, $4)',
+                    [this.data.username, this.data.SessionPassword, this.data.id, this.data.createdAt]
                 );
 
                 Logger.success("data appended to postgresql database")
@@ -84,8 +80,8 @@ export default class appendDB {
                 }
 
                 await pool.execute(
-                    'INSERT INTO sessions (username, id, createdAt) VALUES (?, ?, ?)',
-                    [this.data.username, this.data.id, this.data.createdAt]
+                    'INSERT INTO sessions (username, sessionpassword, id, createdAt) VALUES (?, ?, ?, ?)',
+                    [this.data.username, this.data.SessionPassword, this.data.id, this.data.createdAt]
                 );
 
                 Logger.success("data appended to mysql database")

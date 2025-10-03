@@ -45,6 +45,7 @@ export default class createDatabase {
                     await pool.query(`
                         CREATE TABLE sessions (
                             username TEXT NOT NULL,
+                            SessionPassword TEXT NOT NULL,
                             id TEXT PRIMARY KEY,
                             createdAt TEXT NOT NULL
                         );
@@ -71,6 +72,7 @@ export default class createDatabase {
                     await pool.query(`
                         CREATE TABLE sessions (
                             username VARCHAR(255) NOT NULL,
+                            SessionPassword VARCHAR(255) NOT NULL,
                             id VARCHAR(255) PRIMARY KEY,
                             createdAt VARCHAR(255) NOT NULL
                         );
