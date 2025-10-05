@@ -55,7 +55,7 @@ export default class getInfoDB {
 
                 Logger.success("The information was obtained successfully");
 
-                return info.rows;
+                return info.rows.length === 1 ? info.rows[0] : info.rows;
 
             } else {
                 const pool = mysql.createPool(this.databaseUrl);
@@ -67,7 +67,7 @@ export default class getInfoDB {
 
                 Logger.success("The information was obtained successfully");
 
-                return info.rows;
+                return info.rows.length === 1 ? info.rows[0] : info.rows;
             }
         } catch (err) {
             Logger.error(`EasySession error! Error getting data from DB: \n ${err}`)

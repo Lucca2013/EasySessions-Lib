@@ -51,30 +51,14 @@ import EasySession from "../main.js";
 //the creation of a JSON storage. Params: path
 EasySession.JSON.create("/sessions");
 
-//that a way to receive the correct params and then execute a function,
-//in that case is the EasySession.JSON.append(); To append the infos in the JSON
-app.post('/sessions/listenNewUsers', EasySession.handler(async (user) => {
-    console.log("New user received:", user);
-    const {username, password} = user;
-
-    //append a info to the JSON, you can put only username and the script will create the fields:
-    //username, id and createdAt
-    //params: path of the JSON, username
-    EasySession.JSON.append("/sessions", username, password);
-}));
-
-//EXCLUSIVE FOR EXPRESS.JS USERS
-//that a way to receive the correct params and then execute a function,
-//in that case is the EasySession.JSON.append(); To append the infos in the JSON
-EasySession.expressUtils.onNewUsers(app, (user) => {
-    console.log("New user:", user);
-    const {username, password} = user;
-
-    //append a info to the DB, you can put only username and the script will create the fields:
-    //username, id and createdAt
-    //params: DATABASE_URL, username
-    EasySession.JSON.append('/sessions', username, password);
-});
+//It listen to new users at a custom path and append info to storage and then return the id
+//Params: type (DB or JSON) databaseUrl (for DB) or filePath (for JSON)
+app.post('/sessions/listenNewUsers', EasySession.AppendInfoAndReturnId(
+    { 
+        type: "JSON"
+        filePath: "/sessions"
+    }
+));
 
 //put all the sessions info of a user in a var. Params: path, username
 const Info = EasySession.JSON.getInfo("/sessions", "randomName");
@@ -104,30 +88,14 @@ app.listen(3000);
 //the creation of a SQL storage. Params: DATABASE_URL
 await EasySession.DB.create(process.env.DATABASE_URL);
 
-//that a way to receive the correct params and then execute a function,
-//in that case is the EasySession.DB.append(); To append the infos in the DB
-app.post('/sessions/listenNewUsers', EasySession.handler(async (user) => {
-    console.log("New user received:", user);
-    const {username, password} = user;
-
-    //append a info to the DB, you can put only username and the script will create the fields:
-    //username, id and createdAt
-    //params: DATABASE_URL, username
-    EasySession.DB.append(process.env.DATABASE_URL, username, password);
-}));
-
-//EXCLUSIVE FOR EXPRESS.JS USERS
-//that a way to receive the correct params and then execute a function,
-//in that case is the EasySession.DB.append(); To append the infos in the DB
-EasySession.expressUtils.onNewUsers(app, (user) => {
-    console.log("New user:", user);
-    const {username, password} = user;
-
-    //append a info to the DB, you can put only username and the script will create the fields:
-    //username, id and createdAt
-    //params: DATABASE_URL, username
-    EasySession.DB.append(process.env.DATABASE_URL, username, password);
-});
+//It listen to new users at a custom path and append info to storage and then return the id
+//Params: type (DB or JSON) databaseUrl (for DB) or filePath (for JSON)
+app.post('/sessions/listenNewUsers', EasySession.AppendInfoAndReturnId(
+    { 
+        type: "DB", 
+        databaseUrl: DATABASE_URL 
+    }
+));
 
 //put all the sessions info of a user in a var. Params: DATABASE_URL, username
 Info = await EasySession.DB.getInfo(process.env.DATABASE_URL, 'randomName')

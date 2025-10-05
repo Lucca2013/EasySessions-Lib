@@ -6,6 +6,8 @@ import createDB from "./sessionsConfig/createSessionsFile/createDB.js";
 import appendDB from "./sessionsConfig/appendInfoSessions/appendDB.js";
 import getInfoDB from "./sessionsConfig/getInfoSessions/getInfoDB.js";
 import deleteInfoDB from "./sessionsConfig/deleteInfoSessions/deleteInfoDB.js";
+import e from "express";
+import Logger from "./utils/logger.js";
 
 export default class EasySession {
     static servers = {};
@@ -36,8 +38,8 @@ export default class EasySession {
             await createdb.createDB();
         },
 
-        async append(databaseUrl, username, SessionPassword) {
-            const appenddb = new appendDB(databaseUrl, username, SessionPassword);
+        async append(databaseUrl, username) {
+            const appenddb = new appendDB(databaseUrl, username);
             await appenddb.appendToDB();
         },
 
@@ -47,38 +49,45 @@ export default class EasySession {
             return Info;
         },
 
-        async deleteInfo() {
-            return new deleteInfoDB();
+        async deleteInfo(databaseUrl, username) {
+            const deletedb = new deleteInfoDB(databaseUrl, username);
+            await deletedb.deleteFromDB();
         }
 
     }
 
     static handler(callback) {
         return async (req, res) => {
-            const { username, password } = req.body;
+            const { username } = req.body;
             try {
-                await callback({ username, password });
-                res.json({ status: "User received and forwarded" });
+                await callback(username);
+                res.send(200);
             } catch (err) {
                 res.status(500).json({ error: err.message });
             }
         };
     }
 
-    static expressUtils = {
-        onNewUsers(app, callback) {
-            app.post("/sessions/listenNewUsers", async (req, res) => {
-                const { username, password } = req.body;
-
-                try {
-                    await callback({ username, password });
-                } catch (error) {
-                    Logger.error("Error in EasySession callback:", error);
+    static AppendInfoAndReturnId({ type = "JSON" | "DB", databaseUrl = null, filePath = null }) {
+        return async (req, res) => {
+            const { username } = req.body;
+            try {
+                let info;
+                if (type === "JSON") {
+                    this.JSON.append(filePath, username);
+                    info = this.JSON.getInfo(filePath, username);
+                } else if (type === "DB") {
+                    await this.DB.append(databaseUrl, username);
+                    info = await this.DB.getInfo(databaseUrl, username);
+                } else {
+                    Logger.error(`EasySession error! type not defined: ${type} it needs to be "JSON" or "DB" \n Error at: AppendInfoAndReturnId function`);
+                    throw new Error("type not defined, it needs to be 'JSON' or 'DB'");
                 }
-
-                res.json({ status: "User received and forwarded" });
-            });
-        }
-    };
+                res.send(info.id);
+            } catch (err) {
+                res.status(500).json({ error: err.message });
+            }
+        };
+    }
 
 }

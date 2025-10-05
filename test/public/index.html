@@ -1,114 +1,120 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Formulário de Login</title>
     <style>
-        /* Estilos CSS básicos para centralizar e melhorar a aparência */
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
+      /* Estilos CSS básicos para centralizar e melhorar a aparência */
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f4f4f4;
+      }
 
-        .login-box {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
-        }
+      .login-box {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 300px;
+      }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
 
-        .input-group {
-            margin-bottom: 15px;
-        }
+      .input-group {
+        margin-bottom: 15px;
+      }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+      }
 
-        .input-group input[type="text"],
-        .input-group input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box; /* Garante que o padding não aumente o tamanho total */
-        }
+      .input-group input[type="text"],
+      .input-group input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box; /* Garante que o padding não aumente o tamanho total */
+      }
 
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+      button:hover {
+        background-color: #0056b3;
+      }
     </style>
-</head>
-<body>
-
-<div class="login-box">
-    <h2>Login</h2>
-    <form action="#" method="POST">
+  </head>
+  <body>
+    <div class="login-box">
+      <h2>Login</h2>
+      <form action="#" method="POST">
         <div class="input-group" id="username-group">
-            <label for="username">Nome de Usuário:</label>
-            <input type="text" id="username" name="username" required>
+          <label for="username">Nome de Usuário:</label>
+          <input type="text" id="username" name="username" required />
         </div>
-        
+
         <div class="input-group" id="password-group">
-            <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" required>
+          <label for="password">Senha:</label>
+          <input type="password" id="password" name="password" required />
         </div>
-        
+
         <button type="submit">Entrar</button>
-        
-    </form>
-</div>
+      </form>
+    </div>
 
-<script>
-    document.querySelector('form').addEventListener('submit', function(event) {
-        event.preventDefault();
+    <script>
+      document
+        .querySelector("form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
 
-        fetch('/sessions/listenNewUsers', {
-            method: 'POST',
+          fetch("/sessions/listenNewUsers", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify({ username, password })
-        })
-        .then(response => {
-            alert(response)
-        })
-        .catch(error => {
-            console.error('Erro:', error);
+            body: JSON.stringify({ username, password }),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Erro na resposta do servidor");
+              }
+              return response.text();
+            })
+            .then((sessionId) => {
+              alert(`Login bem-sucedido! ID da sessão: ${sessionId}`);
+            })
+            .catch((error) => {
+              console.error("Erro:", error);
+              alert("Erro no login: " + error.message);
+            });
         });
-    });
-</script>
-
-</body>
+    </script>
+  </body>
 </html>
