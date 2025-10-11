@@ -94,27 +94,35 @@
           const username = document.getElementById("username").value;
           const password = document.getElementById("password").value;
 
-          fetch("/sessions/listenNewUsers", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Erro na resposta do servidor");
-              }
-              return response.text();
-            })
-            .then((sessionId) => {
-              alert(`Login bem-sucedido! ID da sessão: ${sessionId}`);
-            })
-            .catch((error) => {
-              console.error("Erro:", error);
-              alert("Erro no login: " + error.message);
-            });
+          fetchNewUsers(username, password);
+
+      });
+
+      function fetchNewUsers(username, password){
+        fetch("/sessions/listenNewUsers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Erro na resposta do servidor");
+          }
+          return response.text();
+        })
+        .then((sessionId) => {
+          localStorage.setItem("id", sessionId);
+          window.location.href = "/loged";
+
+        })
+        .catch((error) => {
+          console.error("Erro:", error);
+          alert("Erro no login: " + error.message);
         });
+      }
+
     </script>
   </body>
 </html>

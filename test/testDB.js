@@ -18,9 +18,27 @@ app.get('/', (req, res) => {
   res.sendFile('index.html', { root: 'test/public' });
 });
 
+app.get('/loged', (req, res) => {
+    res.sendFile('loged.html', { root: 'test/public' })
+});
+
 app.post('/sessions/listenNewUsers', EasySession.AppendInfoAndReturnId(
     { 
         type: "DB", 
         databaseUrl: DATABASE_URL 
+    }
+));
+
+app.post('/sessions/verifyId', EasySession.verifyIdAndReturnInfo(
+    {
+        type: "DB", 
+        databaseUrl: DATABASE_URL 
+    }
+))
+
+app.post('/sessions/logout', EasySession.DeleteInfo(
+    {
+        type: "DB",
+        databaseUrl: DATABASE_URL
     }
 ));

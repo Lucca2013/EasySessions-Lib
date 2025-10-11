@@ -1,0 +1,60 @@
+<html>
+  <body>
+    <h1 id="title">You are loged</h1>
+    <button id="logout"><p>Logout</p></button>
+  </body>
+  <script>
+    title = document.getElementById("title");
+    logoutBtn = document.getElementById("logout");
+
+    function verifyId() {
+      if (localStorage.getItem("id")) {
+        id = localStorage.getItem("id");
+
+        fetch("/sessions/verifyId", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              console.error("Erro na resposta do servidor");
+            }
+            return response.json();
+          })
+          .then((info) => {
+            console.log(info.id + "\n" + info.username + "\n" + info.createdat);
+            title.textContent += ", " + info.username;
+          });
+      } else {
+        window.location.href = "/";
+      }
+    }
+
+    verifyId();
+
+    function logout() {
+      if (localStorage.getItem("id")) {
+        id = localStorage.getItem("id");
+
+        fetch("/sessions/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id }),
+        }).then((response) => {
+          console.log(response);
+        }); 
+
+        localStorage.removeItem("id");
+      }
+
+      location.href = "/";
+    }
+
+    logoutBtn.addEventListener('click', logout);
+  </script>
+</html>
