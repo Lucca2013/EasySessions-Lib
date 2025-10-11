@@ -1,21 +1,40 @@
 import EasySession from "../main.js";
+import express from "express";
 
-for (let i = 0; i < 5; i++) {
-    const randomName = ["alice", "bob", "charlie", "dave", "eve"];
-    const randomPassword = ["password1", "password2", "password3", "password4", "password5"];
-    let name = i;
+const app = express();
+app.use(express.json());
 
-    EasySession.JSON.create("/sessions");
-    EasySession.JSON.append("/sessions", randomName[name], randomPassword[name]);
-    const Info = EasySession.JSON.getInfo("/sessions", randomName[name]);
-}
+EasySession.JSON.create('/sessions');
 
-const nameToDelete = "bob"
-EasySession.JSON.deleteInfo("/sessions", nameToDelete)
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
 
-const Info = EasySession.JSON.getInfo("/sessions", "eve");
-if (Info.id === "5fb55bfe61418d1b0c1d19e0126e5845") {
-    console.log("id ok");
-} else {
-    console.log("id not ok");
-}
+app.get('/', (req, res) => {
+  res.sendFile('index.html', { root: 'test/public' });
+});
+
+app.get('/loged', (req, res) => {
+    res.sendFile('loged.html', { root: 'test/public' })
+});
+
+app.post('/sessions/listenNewUsers', EasySession.AppendInfoAndReturnId(
+    { 
+        type: "JSON", 
+        filePath: '/sessions'
+    }
+));
+
+app.post('/sessions/verifyId', EasySession.verifyIdAndReturnInfo(
+    { 
+        type: "JSON", 
+        filePath: '/sessions'
+    }
+))
+
+app.post('/sessions/logout', EasySession.DeleteInfo(
+    { 
+        type: "JSON", 
+        filePath: '/sessions'
+    }
+));

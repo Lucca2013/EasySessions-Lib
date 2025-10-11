@@ -3,16 +3,16 @@
 **EasySession-lib** is a lightweight Node.js library that simplifies session management for small projects and prototypes.  
 Instead of manually handling files, IDs, and persistence, EasySession-lib abstracts these steps with a simple API.
 
+**Version:** 1.0.0
+
 ---
 
 ## Features
 
 - Easy Session Handling – Create and manage sessions effortlessly.
 - Flexible Server Storage Options Where the ids/token can be validated
-  - JSON file storage (implemented)
-  - Database storage (developement)
-- Future Roadmap  
-  - Client-side storage integration (e.g., comparing client `localStorage` ID with server storage).
+  - JSON file storage
+  - Database storage
 
 ---
 
@@ -23,7 +23,6 @@ EasySession-lib is currently in **active development**.
 - JSON storage available
 - Database storage in developement
 - HTTP automotizations avaliable
-- Local-Storage system planned
 
 ---
 
@@ -43,53 +42,33 @@ cd EasySession-lib
 
 ## Usage Example
 
-JSON server storage:
+SQL server storage
 
 ```js
 import EasySession from "../main.js";
-
-//the creation of a JSON storage. Params: path
-EasySession.JSON.create("/sessions");
-
-//It listen to new users at a custom path and append info to storage and then return the id
-//Params: type (DB or JSON) databaseUrl (for DB) or filePath (for JSON)
-app.post('/sessions/listenNewUsers', EasySession.AppendInfoAndReturnId(
-    { 
-        type: "JSON"
-        filePath: "/sessions"
-    }
-));
-
-//put all the sessions info of a user in a var. Params: path, username
-const Info = EasySession.JSON.getInfo("/sessions", "randomName");
-//you can test:
-if (Info.id === "5fb55bfe61418d1b0c1d19e0126e5845") { //in the future, you will put the id who is in the LocalStorage of the user to compare
-  console.log("id ok"); 
-} else {
-  console.log("id not ok");
-}
-
-//delete all the fields of a username. Params: path, username
-EasySession.JSON.deleteInfo("/sessions", "randomName")
-```
-
-SQL server storage (only create and append at the moment)
-
-```js
-import EasySession from "../main.js";
-import { configDotenv } from "dotenv";
+import dotenv from 'dotenv';
 import express from "express";
 
-configDotenv();
-app = express();
+dotenv.config();
+
+const app = express();
 app.use(express.json());
-app.listen(3000); 
+const DATABASE_URL = process.env.DATABASE_URL;
 
-//the creation of a SQL storage. Params: DATABASE_URL
-await EasySession.DB.create(process.env.DATABASE_URL);
+await EasySession.DB.create(DATABASE_URL);
 
-//It listen to new users at a custom path and append info to storage and then return the id
-//Params: type (DB or JSON) databaseUrl (for DB) or filePath (for JSON)
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
+
+app.get('/', (req, res) => {
+  res.sendFile('index.html', { root: 'test/public' });
+});
+
+app.get('/loged', (req, res) => {
+    res.sendFile('loged.html', { root: 'test/public' })
+});
+
 app.post('/sessions/listenNewUsers', EasySession.AppendInfoAndReturnId(
     { 
         type: "DB", 
@@ -97,14 +76,64 @@ app.post('/sessions/listenNewUsers', EasySession.AppendInfoAndReturnId(
     }
 ));
 
-//put all the sessions info of a user in a var. Params: DATABASE_URL, username
-Info = await EasySession.DB.getInfo(process.env.DATABASE_URL, 'randomName')
+app.post('/sessions/verifyId', EasySession.verifyIdAndReturnInfo(
+    {
+        type: "DB", 
+        databaseUrl: DATABASE_URL 
+    }
+))
 
-if (Info.id === "5fb55bfe61418d1b0c1d19e0126e5845") { //in the future, you will put the id who is in the LocalStorage of the user to compare
-  console.log("id ok"); 
-} else {
-  console.log("id not ok");
-}
+app.post('/sessions/logout', EasySession.DeleteInfo(
+    {
+        type: "DB",
+        databaseUrl: DATABASE_URL
+    }
+));
+```
+
+JSON server storage:
+
+```js
+import EasySession from "../main.js";
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+EasySession.JSON.create('/sessions');
+
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
+
+app.get('/', (req, res) => {
+  res.sendFile('index.html', { root: 'test/public' });
+});
+
+app.get('/loged', (req, res) => {
+    res.sendFile('loged.html', { root: 'test/public' })
+});
+
+app.post('/sessions/listenNewUsers', EasySession.AppendInfoAndReturnId(
+    { 
+        type: "JSON", 
+        filePath: '/sessions'
+    }
+));
+
+app.post('/sessions/verifyId', EasySession.verifyIdAndReturnInfo(
+    { 
+        type: "JSON", 
+        filePath: '/sessions'
+    }
+))
+
+app.post('/sessions/logout', EasySession.DeleteInfo(
+    { 
+        type: "JSON", 
+        filePath: '/sessions'
+    }
+));
 
 ```
 
